@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="description" content="home page" />
+  <meta name="keywords" content="HTML, CSS" />
+  <meta name="author" content="Mindula"  />
+  <title> D3 Project</title>
+  <script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+</head>
+<style>
+background-color: blue;
+	
+
+div #layout {
+  text-align: center;
+}
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+div #background {
+  width: 900px;
+  height: 600px;
+  margin: auto;
+  background-color: powderblue;
+}
+
+div #barGraph{
+    color:blue;
+}
+.bar {
+       fill:blue;
+       animation-fill-mode: left;
+
+
+}
+
+
+svg {
+  width: 100%;
+  height: 100%;
+}
+h1{
+      text-align: center;
+}
+</style>
+
+<body>
+
+	 <div id='layout'>
+   
+    <div id='background'>
+      <svg />
+    </div>
+  </div>
+  <h1 style="color:white">Cases of the Dengue Fever between 2008-2016</h1>
+  <p style="color:red">As shown in the graph above since the outbreak of the Dengue epedemic in 2008 there has mainly been a steady distribution towards
+    rural areas. The years 2009,2010,2011,2013 and 2015 showed comparitvley low cases being reported with an approximate 35000, 33000,
+    28000,31000 and 28000 cases being reported respectivley. However the years 2012, 2014 and 2016  show a reporting of 
+    45000,48000 and 55000 Cases being reported respectivley. According to the Sri Lanka Minstry of health although there was
+    a server amount of cases being reported in 2016 the Case fatality rate was as low as 0.17%.
+  </p>
+  <body style="background-color: powderblue;"></body>
+
+  <script>
+    var dengue = [
+      {
+        Year: '2008',
+        value: 6,
+        color: 'blue'
+      },
+      {
+        Year: '2009',
+        value: 35,
+        color: '#00a2ee'
+      },
+      {
+        Year: '2010',
+        value: 33,
+        color: '#fbcb39'
+      },
+      {
+        Year: '2011',
+        value: 28,
+        color: '#007bc8'
+      },
+      {
+        Year: '2012',
+        value: 45,
+        color: '#65cedb'
+      },
+      {
+          Year: '2013',
+        value: 31,
+        color: '#ff6e52'
+      },
+      {
+        Year: '2014',
+        value: 48,
+        color: '#f9de3f'
+      },
+      {
+        Year: '2015',
+        value: 28,
+        color: '#5d2f8e'
+      },
+      {
+        Year: '2016',
+        value: 55,
+        color: '#008fc9'
+      }
+     
+    ];
+    var color = d3.scaleOrdinal(d3.schemeCategory20);
+    var svg = d3.select('svg');
+    var svgBackground = d3.select('#background');
+    var margin = 80;
+    var w = 1000 - 2 * margin;
+    var h = 600 - 2 * margin;
+    var chart = svg.append('g')
+        .attr('transform', `translate(${margin}, ${margin})`);
+    var xScale = d3.scaleBand()
+        .range([0,w])
+         .domain(dengue.map((s) => s.Year))
+         .padding(0.4)
+
+    var yScale = d3.scaleLinear()
+      .range([h, 0])
+      .domain([0, 150]);
+
+    var DrawYaxis = () => d3.axisLeft()
+        .scale(yScale)
+
+    chart.append('g')
+          .attr('transform', `translate(0, ${h})`)
+         .call(d3.axisBottom(xScale));
+
+    chart.append('g')
+      .call(d3.axisLeft(yScale));
+
+    chart.append('g')
+        .attr('class', 'grid')
+        .call(DrawYaxis()
+            .tickSize(-w, 0, 0)
+            .tickFormat('')
+          )
+      var barGraph = chart.selectAll()
+            .data(dengue)
+            .enter()
+            .append('g')
+        barGraph 
+          .append('rect')
+          .attr('class','bar')
+          .attr('x', (g) => xScale(g.Year))
+          .attr('y', (g) => yScale(g.value))
+         .attr('height', (g) => h - yScale(g.value))
+          .attr('width', xScale.bandwidth())
+        .on('mouseenter', function (a, i) {
+        d3.selectAll('.value')
+          .attr('opacity', 0)
+
+        d3.select(this)
+          .transition()
+          .duration(300)
+          .attr('opacity', 0.5)
+          .attr('x', (a) => xScale(a.Year) - 5)
+          .attr('width', xScale.bandwidth() + 12)
+
+        var y = yScale(actual.value)
+
+        line = chart.append('line')
+          .attr('id', 'limit')
+          .attr('x1', 0)
+          .attr('y1', y)
+          .attr('x2', width)
+          .attr('y2', y)
+
+        barGraph.append('text')
+          .attr('class', 'midway')
+          .attr('x', (a) => xScale(a.language) + xScale.bandwidth() / 2)
+          .attr('y', (a) => yScale(a.value) + 30)
+          .attr('fill', 'white')
+          .attr('text-anchor', 'middle')
+          .text((a, idx) => {
+            var midway = (a.value - actual.value).toFixed(1)
+            
+            let text = ''
+            if (midway > 0) text += '+'
+            text += `${midway}%`
+
+            return idx !== i ? text : '';
+          })
+
+      })
+       .on('mouseleave', function () {
+        d3.selectAll('.value')
+          .attr('opacity', 1)
+
+        d3.select(this)
+          .transition()
+          .duration(300)
+          .attr('opacity', 1)
+          .attr('x', (a) => xScale(a.Year))
+          .attr('width', xScale.bandwidth())
+
+        chart.selectAll('#limit').remove()
+        chart.selectAll('.midway').remove()
+      })
+    barGraph
+      .append('text')
+      .attr('class', 'value')
+      .attr('x', (a) => xScale(a.Year) + xScale.bandwidth() / 2)
+      .attr('y', (a) => yScale(a.value) + 30)
+      .attr('text-anchor', 'middle')
+      .text((a) => `${a.value}`)
+    
+       svg
+      .append('text')
+      .attr('class', 'label')
+      .attr('x', -(h / 2) - margin)
+      .attr('y', margin / 2.4)
+      .attr('transform', 'rotate(-90)')
+      .attr('text-anchor', 'middle')
+      .text('Cases * 1000')
+
+    svg.append('text')
+      .attr('class', 'label')
+      .attr('x', w / 2 + margin)
+      .attr('y', h + margin * 1.7)
+      .attr('text-anchor', 'middle')
+      .text('Year')
+
+      .style("fill","green");
+
+
+  </script>
+</body>

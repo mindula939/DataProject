@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="description" content="home page" />
+  <meta name="keywidthords" content="HTML, CSS" />
+  <meta name="author" content="Mindula"  />
+  <heading> D3 Project</heading>
+  <script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+</head>
+<style>
+	
+.heading-holder {
+  text-align: center;
+}
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+.heading {
+  font-family: 'Lato', sans-serif;
+}
+.subheading {
+  font-size: 20px;
+}
+.font {
+  font-size: 18px;
+}
+
+/* tool */
+.tool {
+  background: #eee;
+  box-shadowidth: 0 0 5px #999999;
+  color: #333;
+  display: none;
+  font-size: 18px;
+  left: 130px;
+  padding: 10px;
+  position: absolute;
+  text-align: center;
+  top: 95px;
+  width: 80px;
+  z-index: 10;
+}
+
+/* legend */
+.legend {
+  font-size: 14px;
+}
+
+/* piechart */
+#piechart {
+  height: 1000px;
+  margin: 0 auto;
+  position: left;
+  display: block;
+  width: 800px;
+}
+rect {
+  cursor: pointer; 
+  stroke-width: 2;
+}
+rect.disabled {
+  fill: transparent !important;
+}
+
+
+
+
+</style>
+<div class="heading"></div>
+<h1 class="heading" style="color:white;">What age groups were affected from the Dengue Fever?</h1>
+<p style="color:red;"> The pie chart indicates that the modal age group affected from the Dengue Fever was 20-24 year olds, which 
+  highlights that the Dengue Fever is prevelant amongst adults as it is amongst children. It can also be highlighted that 30% 
+  of the Cases occur between 5-19 year olds predomintaly school children. However whilst there has been a steady increase in 
+  cases between 4-24 year olds there has only been 12% of the cases of the Dengue Fever being reported between 45-59
+  year olds in 2016.
+</p>
+
+</div>
+<div id="piechart"></div>
+
+<body>
+     <body style="background-color: powderblue;"></body>
+  <script>
+  		var data = [
+    {Age: "1-4", cases: 5},
+    {Age: "5-9", cases: 9},
+    {Age: "10-14", cases: 8},
+    {Age: "15-19", cases: 11},
+    {Age: "20-24", cases: 17},
+    {Age: "25-29", cases: 12},
+    {Age: "30-34", cases: 9},
+    {Age: "35-39", cases: 7},
+    {Age: "40-44", cases: 5},
+    {Age: "45-49", cases: 4},
+    {Age: "50-54", cases: 3},
+    {Age: "55-59", cases: 5},
+    {Age: "60>", cases: 3}
+    
+  ];
+
+
+var width = 1200;
+var height = 800;
+
+
+var radius = 200;
+
+var RectSize = 25; 
+var Spacing = 6; 
+
+
+
+
+
+var svg = d3.select('#piechart') 
+  .append('svg') 
+  .attr('width', width) 
+  .attr('height', height) 
+  .append('g') 
+  .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')'); 
+
+var colors = d3.scaleOrdinal(d3.schemeCategory20);
+
+var arc = d3.arc()
+  .innerRadius(0) 
+  .outerRadius(radius); 
+
+var pie = d3.pie() 
+  .value(function(d) { return d.cases; }) 
+  .sort(null); 
+
+
+var tool = d3.select('#piechart') 
+  .append('div')                               
+  .attr('class', 'tool'); 
+
+tool.append('div')                           
+  .attr('class', 'Age');                      
+
+tool.append('div')                   
+  .attr('class', 'cases'); 
+tool.append('div') 
+  .attr('class', 'percentage'); 
+
+
+
+data.forEach(function(d) {
+  d.cases = +d.cases; 
+  d.enable = true; 
+});
+
+
+var path = svg.selectAll('path') 
+  .data(pie(data))
+  .enter() 
+  .append('path') 
+  .attr('d', arc) 
+  .attr('fill', function(d) { return colors(d.data.Age); }) 
+  .each(function(d) { this._current - d; }); 
+
+path.on('mouseover', function(d) {      
+ var total = d3.sum(data.map(function(d) {         
+  return (d.enable) ? d.cases : 0; 
+  }));                                                      
+ var percentage = Math.round(1000 * d.data.cases / total) / 10; 
+ tool.select('.Age').html(d.data.Age);          
+ tool.select('.cases').html('cases' + d.data.cases);            
+ tool.select('.percentage').html(percentage + '%');        
+ tool.style('display', 'block');                      
+});                                                           
+
+path.on('mouseout', function() {                      
+  tool.style('display', 'none'); 
+ });
+
+path.on('mousemove', function(d) {                 
+  tool.style('top', (d3.event.layerY + 10) + 'px') 
+    .style('left', (d3.event.layerX + 10) + 'px'); 
+  });
+
+
+var legend = svg.selectAll('.legend') 
+  .data(colors.domain()) 
+  .enter() 
+  .append('g') 
+  .attr('class', 'legend') 
+  .attr('transform', function(d, i) {                   
+    var height = RectSize + Spacing;   
+    var offset =  height * colors.domain().length / 2;  
+    var horizontal = 18 * RectSize; 
+    var vertical = i * height - offset; 'i'               
+      return 'translate(' + horizontal + ',' + vertical + ')'; 
+   });
+
+
+legend.append('rect')                       
+  .attr('width', RectSize)                   
+  .attr('height', RectSize)                       
+  .style('fill', colors) 
+  .style('stroke', colors) 
+  .on('click', function(Age) {
+    var rect = d3.select(this); 
+    var enable = true; 
+    var totalenable = d3.sum(data.map(function(d) { 
+      return (d.enable) ? 1 : 0; 
+    }));
+
+    if (rect.attr('class') === 'disabled') { 
+      rect.attr('class', ''); 
+    } else { // else
+      if (totalenable < 2) return; 
+      rect.attr('class', 'disabled'); 
+      enable = false; 
+    }
+
+    pie.value(function(d) { 
+      if (d.Age === Age) d.enable = enable; 
+        return (d.enable) ? d.cases : 0; 
+    });
+
+    path = path.data(pie(data)); 
+
+    path.transition() 
+      .duration(750) 
+      .attrTwidtheen('d', function(d) { 
+        var interpolate = d3.interpolate(this._current, d); 
+        this._current = interpolate(0); 
+        return function(t) {
+          return arc(interpolate(t));
+        };
+      });
+  });
+
+legend.append('text')                                    
+  .attr('x', RectSize + Spacing)
+  .attr('y', RectSize - Spacing)
+  .text(function(d) 
+    { 
+      return d; 
+  }); 
+  		
+  </script>
+</body>

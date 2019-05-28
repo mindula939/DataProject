@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+		<title>D3 project Assignment</title>
+		<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+        <style>
+            .bubblechart {
+                            position: center;
+
+            }
+
+        </style>
+
+	
+</head>
+<body>
+    <h1 style="color: white;"> What Provinces were affected from the Dengue Fever in 2017?</h1>
+    <p style="color:red;">Dengue Fever Mainly occurs in the western provinces of Sri Lanka, with a whopping 43% of 
+        the cases of the Dengue Fever being Reported in western Province. The  districts that saw a dramatic rise are 
+        colombo,gampha and kalutara which saw 3722, 2216 and 11126 cases being reported across these districts. However it 
+        isnt only  Western Provinces that saw a reported rise of the dengue Fever there has also being a rise amongst, Nothern 
+        provinces with districts  such as Jaffna, Polunruwa and Anurdhapura seeing a reported amount of cases of 1835,1273 and 1268 
+        cases being reported across these districts.
+    </p>
+     <body style="background-color: powderblue;"></body>
+
+	<script type="text/javascript">
+
+        dataset = {
+            "children": [{"Name":"Colombo","cases":3722},
+                {"Name":"Gampha","cases":2216},
+                {"Name":"Kalutara","cases":1126},
+                {"Name":"Kandy","cases":1072},
+                {"Name":"Matale","cases":202},
+                {"Name":"Nuwara Eilya","cases":66},
+                {"Name":"Galle","cases":651},
+                {"Name":"Hambantota","cases":441},
+                {"Name":"Matara","cases":611},
+                {"Name":"jaffna","cases":1835},
+                {"Name":"Kilinochi","cases":85},
+                {"Name":"Mannar","cases":68},
+                {"Name":"Vavuniya","cases":161},
+                {"Name":"Mulativu","cases":89},
+                {"Name":"Batticala","cases":761},
+                {"Name":"Ampara","cases":95},
+                {"Name":"Trincomalee","cases":508},
+                {"Name":"Kurunegala","cases":664},
+                {"Name":"Puttalam","cases":500},
+                {"Name":"Anurdhapura","cases":1273},
+                {"Name":"Polonnaruwa","cases":1268}]
+        };
+
+        var diameter = 400;
+        var colors = d3.scaleOrdinal(d3.schemeCategory20);
+
+        var bubblechart = d3.pack(dataset)
+            .size([diameter, diameter])
+            .padding(1.5);
+
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", diameter)
+            .attr("height", diameter)
+            .attr("class", "bubblechart");
+
+        var Graph = d3.hierarchy(dataset)
+            .sum(function(d) { return d.cases; });
+        
+
+
+        var graph = svg.selectAll(".graph")
+            .data(bubblechart(Graph).descendants())
+            .enter()
+            .filter(function(d){
+                return  !d.children
+            })
+            .append("g")
+            .attr("class", "graph")
+            .attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")";
+            });
+
+        graph.append("title")
+            .text(function(d) {
+                return d.Name + ": " + d.cases;
+            });
+
+        graph.append("circle")
+            .attr("r", function(d) {
+                return d.r;
+            })
+            .style("fill", function(d,i) {
+                return colors(i);
+            });
+
+        graph.append("text")
+            .attr("dy", ".2em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+                return d.data.Name.substring(0, d.r / 3);
+            })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", function(d){
+                return d.r/5;
+            })
+            .attr("fill", "white");
+
+        graph.append("text")
+            .attr("dy", "1.3em")
+            .style("text-anchor", "middle")
+            .text(function(d) {
+                return d.data.cases;
+            })
+            .attr("font-family",  "Gill Sans", "Gill Sans MT")
+            .attr("font-size", function(d){
+                return d.r/5;
+            })
+            .attr("fill", "white");
+
+
+        d3.select(self.frameElement)
+            .style("height", diameter + "px");
+
+
+
+	</script>
+</body>
+</html>
