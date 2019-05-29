@@ -7,10 +7,11 @@
   <meta name="author" content="Mindula"  />
   <title> D3 Project</title>
   <script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
-</head>
-<style>
+
+  <style>
+body{
 background-color: blue;
-	
+}
 
 div #layout {
   text-align: center;
@@ -31,9 +32,6 @@ div #barGraph{
 }
 .bar {
        fill:blue;
-       animation-fill-mode: left;
-
-
 }
 
 
@@ -45,15 +43,21 @@ h1{
       text-align: center;
 }
 </style>
+</head>
 
-<body>
 
-	 <div id='layout'>
+<body style="background-color: powderblue;"></body>
+
+	<div id='layout'>
    
     <div id='background'>
+
       <svg />
+
     </div>
+    
   </div>
+
   <h1 style="color:white">Cases of the Dengue Fever between 2008-2016</h1>
   <p style="color:red">As shown in the graph above since the outbreak of the Dengue epedemic in 2008 there has mainly been a steady distribution towards
     rural areas. The years 2009,2010,2011,2013 and 2015 showed comparitvley low cases being reported with an approximate 35000, 33000,
@@ -61,8 +65,7 @@ h1{
     45000,48000 and 55000 Cases being reported respectivley. According to the Sri Lanka Minstry of health although there was
     a server amount of cases being reported in 2016 the Case fatality rate was as low as 0.17%.
   </p>
-  <body style="background-color: powderblue;"></body>
-
+  
   <script>
     var dengue = [
       {
